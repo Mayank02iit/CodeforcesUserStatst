@@ -3,12 +3,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from collections import Counter
 import re
-count = Counter()
 options = Options()
 options.add_argument("--headless=new")
 options.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)"')      
 
 def findData(linksFile,InfoFile,destinationpath):
+    count = Counter()
+    special = 0
     driver = webdriver.Chrome(options)
     with open(destinationpath+linksFile, 'r') as file:
         for line in file:
@@ -26,15 +27,18 @@ def findData(linksFile,InfoFile,destinationpath):
                 Flag = False
                 for element in box:
                     if element[0]=='*':
-                        count[element[1:]]+=1
+                        if element[1:] != "special":
+                            count[int(element[1:])]+=1
+                        else:
+                            special+=1
                         Flag = True
                 if not Flag :
                     count[0]+=1
                     
-    count = sorted(d.items())
+    count = dict(sorted(count.items()))
     with open(destinationpath+InfoFile , 'a') as f:
         for key ,value in count.items():
             f.write(f"The number of questions solved whose rating {key} is {value}\n")
-    
+        f.write(f"the number of special questions solved is {special}")
     print(f"Information is successfully written in the file {destinationpath+InfoFile}")
 

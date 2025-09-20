@@ -6,13 +6,12 @@ options = Options()
 options.add_argument("--headless=new")
 options.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)"')
 
-def findLinks(linksFile,username,destinationpath)      
+def findLinks(linksFile,username,destinationpath):      
     passed = {}
     driver = webdriver.Chrome(options)
     driver.get(f'https://codeforces.com/submissions/{username}/page/1')
     pageNumbers = driver.find_element(By.XPATH, '//*[@class="pagination"]')
     count_page_numbers = int(pageNumbers.text.split(" ")[-2])
-    # print(count_page_numbers)
     for i in range(1,count_page_numbers+1):
         driver.get(f'https://codeforces.com/submissions/{username}/page/{i}')
         datatable_div  = driver.find_element(By.CLASS_NAME, "datatable")
@@ -24,5 +23,5 @@ def findLinks(linksFile,username,destinationpath)
                 continue
             if links[-1].get_attribute('href') not in passed and "Accepted" in row.text:
                     passed[links[-1].get_attribute('href')]=True
-                    with open(linksFile+destinationpath,'a') as f:
+                    with open(destinationpath+linksFile,'a') as f:
                         f.write(f"{links[-1].get_attribute('href')}\n")
